@@ -60,7 +60,19 @@
             <artifactId>jakarta.validation-api</artifactId>
             <version>3.0.2</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-core</artifactId>
+			<version>1.12.445</version> <!-- Use a versão mais recente disponível -->
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-sns</artifactId>
+			<version>1.12.445</version> <!-- Use a versão mais recente disponível -->
+		</dependency>
+
+
+	</dependencies>
 
 	<build>
 		<plugins>
