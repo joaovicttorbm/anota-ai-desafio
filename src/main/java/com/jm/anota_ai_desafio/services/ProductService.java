@@ -1,5 +1,4 @@
 package com.jm.anota_ai_desafio.services;
-import com.jm.anota_ai_desafio.domain.category.Category;
 import com.jm.anota_ai_desafio.domain.product.Product;
 import com.jm.anota_ai_desafio.domain.product.ProductDTO;
 import com.jm.anota_ai_desafio.exception.CategoryNotFoundException;
@@ -65,6 +64,7 @@ public class ProductService {
     }
 
     public Product update(String id, ProductDTO productData) {
+        // Encontrar o produto existente
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
@@ -72,21 +72,27 @@ public class ProductService {
         if (productData.title() != null && !productData.title().isEmpty()) {
             existingProduct.setTitle(productData.title());
         }
+
         if (productData.description() != null) {
             existingProduct.setDescription(productData.description());
         }
+
         if (productData.ownerId() != null && !productData.ownerId().isEmpty()) {
             existingProduct.setOwnerId(productData.ownerId());
         }
+
         if (productData.price() != null && productData.price() >= 0) {
             existingProduct.setPrice(productData.price());
         }
+
         if (productData.categoryTitle() != null && !productData.categoryTitle().isEmpty()) {
-            Category category = categoryRepository.findById(productData.categoryTitle())
+            // Verifica se a categoria fornecida existe antes de atualizar
+            categoryRepository.findById(productData.categoryTitle())
                     .orElseThrow(() -> new CategoryNotFoundException(productData.categoryTitle()));
             existingProduct.setCategoryTitle(productData.categoryTitle());
         }
 
+        // Salvar e retornar o produto atualizado
         return productRepository.save(existingProduct);
     }
 

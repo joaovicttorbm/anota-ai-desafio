@@ -55,26 +55,35 @@ public class CategoryService {
 
 
     public Category update(String id, CategoryDTO categoryData) {
+        // Verificar se o ID não é nulo ou vazio
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("ID cannot be empty");
         }
 
+        // Encontrar a categoria existente
         Category existingCategory = repository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
 
-        if (categoryData.title() == null || categoryData.title().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be empty");
-        }
-        if (categoryData.description() == null) {
-            throw new IllegalArgumentException("Description cannot be null");
-        }
-        if (categoryData.ownerId() == null || categoryData.ownerId().isEmpty()) {
-            throw new IllegalArgumentException("OwnerId cannot be empty");
+        // Validar e atualizar campos se fornecidos
+        if (categoryData.title() != null && !categoryData.title().isEmpty()) {
+            existingCategory.setTitle(categoryData.title());
+        } else if (categoryData.title() == null) {
+            throw new IllegalArgumentException("Title cannot be null");
         }
 
-        existingCategory.setTitle(categoryData.title());
-        existingCategory.setDescription(categoryData.description());
-        existingCategory.setOwnerId(categoryData.ownerId());
+        if (categoryData.description() != null) {
+            existingCategory.setDescription(categoryData.description());
+        } else {
+            throw new IllegalArgumentException("Description cannot be null");
+        }
+
+        if (categoryData.ownerId() != null && !categoryData.ownerId().isEmpty()) {
+            existingCategory.setOwnerId(categoryData.ownerId());
+        } else if (categoryData.ownerId() == null) {
+            throw new IllegalArgumentException("OwnerId cannot be null");
+        }
+
+        // Salvar e retornar a categoria atualizada
         return repository.save(existingCategory);
     }
 
