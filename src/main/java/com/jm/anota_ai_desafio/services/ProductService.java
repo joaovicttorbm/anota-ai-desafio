@@ -5,6 +5,8 @@ import com.jm.anota_ai_desafio.exception.CategoryNotFoundException;
 import com.jm.anota_ai_desafio.exception.ProductNotFoundException;
 import com.jm.anota_ai_desafio.repositories.CategoryRepository;
 import com.jm.anota_ai_desafio.repositories.ProductRepository;
+import com.jm.anota_ai_desafio.services.aws.AwsSnsService;
+import com.jm.anota_ai_desafio.services.aws.MessageDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +16,12 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final AwsSnsService awsSnsService;
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, AwsSnsService awsSnsService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.awsSnsService = awsSnsService;
     }
 
     public Product insert(ProductDTO productData) {
@@ -51,6 +55,13 @@ public class ProductService {
         newProduct.setOwnerId(productData.ownerId());
         newProduct.setPrice(productData.price());
         newProduct.setCategoryTitle(productData.categoryTitle()); // Definir apenas o ID da categoria
+
+        awsSnsService.publishMessage(new MessageDTO(
+                "New product created",
+                "Product Creation",
+                "Creation"
+        ));
+
         return productRepository.save(newProduct);
     }
 
@@ -91,6 +102,13 @@ public class ProductService {
                     .orElseThrow(() -> new CategoryNotFoundException(productData.categoryTitle()));
             existingProduct.setCategoryTitle(productData.categoryTitle());
         }
+
+        // Publicar mensagem no SNS
+        awsSnsService.publishMessage(new MessageDTO(
+                "Product updated",
+                "Product Update",
+                "Update"
+        ));
 
         // Salvar e retornar o produto atualizado
         return productRepository.save(existingProduct);
