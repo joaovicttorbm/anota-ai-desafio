@@ -56,11 +56,7 @@ public class ProductService {
         newProduct.setPrice(productData.price());
         newProduct.setCategoryTitle(productData.categoryTitle()); // Definir apenas o ID da categoria
 
-        awsSnsService.publishMessage(new MessageDTO(
-                "New product created",
-                "Product Creation",
-                "Creation"
-        ));
+        awsSnsService.publishMessage(new MessageDTO(newProduct.getOwnerId(), "Product Updated", "UPDATE"));
 
         return productRepository.save(newProduct);
     }
@@ -104,11 +100,7 @@ public class ProductService {
         }
 
         // Publicar mensagem no SNS
-        awsSnsService.publishMessage(new MessageDTO(
-                "Product updated",
-                "Product Update",
-                "Update"
-        ));
+        awsSnsService.publishMessage(new MessageDTO(existingProduct.getOwnerId(), "Product Updated", "UPDATE"));
 
         // Salvar e retornar o produto atualizado
         return productRepository.save(existingProduct);
